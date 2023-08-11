@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+  <title>Frontend Mentor | Interactive comments section</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+
+  <main>
+    <div class="container">
+      <div class="comment-container">
+        <div class="voting desktop">
+          <div class="upvote">
+            <img src="./images/icon-plus.svg" alt="upvote icon">
+          </div>
+          <div class="votes">
+            <span>12</span>
+          </div>
+          <div class="downvote">
+            <img src="./images/icon-minus.svg" alt="downvote icon">
+          </div>
+        </div>
+        <div>
+          <div class="comment-head">
+            <div class="info">
+              <div class="flex-center">
+                <img src="./images/avatars/image-amyrobson.webp" alt="avatar">
+              </div>
+              <b class="author-name">
+                amyrobson
+              </b>
+              <span class="time">
+                1 month ago
+              </span>
+            </div>
+            <div class="reply-button desktop">
+              <div class="flex-center">
+                <img src="./images/icon-reply.svg" alt="reply icon">
+              </div>
+              <span>Reply</span>
+            </div>
+          </div>
+          <div class="comment">
+            <p>
+              Impressive! Though it seems the drag feature could be improved. But overall it looks incredible. You've
+              nailed the design and the responsiveness at various breakpoints works really well.
+            </p>
+          </div>
+          <div class="mobile-buttons">
+            <div class="voting">
+              <div class="upvote">
+                <img src="./images/icon-plus.svg" alt="upvote icon">
+              </div>
+              <div class="votes">
+                <span>12</span>
+              </div>
+              <div class="downvote">
+                <img src="./images/icon-minus.svg" alt="downvote icon">
+              </div>
+            </div>
+            <div class="reply-button">
+              <div class="flex-center">
+                <img src="./images/icon-reply.svg" alt="reply icon">
+              </div>
+              <span>Reply</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="attribution">
+      Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>.
+      Coded by <a href="https://github.com/younessoub">Youness Oubelkacem</a>.
+    </div>
+  </footer>
+</body>
+
+</html>
