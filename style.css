@@ -49,6 +49,20 @@ button {
 
 /* utility classes end */
 
+body {
+  background-color: var(--Verylightgray);
+}
+
+.desktop {
+  display: none;
+}
+
+.main-container {
+  border: 1px solid red;
+  width: 93%;
+  margin: 3vh auto;
+}
+
 .attribution {
   margin: 30px 0;
   font-size: 11px;
