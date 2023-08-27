@@ -260,8 +260,12 @@ textarea {
   .voting {
     display: flex;
     flex-direction: column;
-    width: 150px;
-    border: 1px solid red;
+    flex: 1;
+    padding: 15px 0;
+  }
+
+  .comment-container>div:nth-child(2) {
+    flex: 12;
   }
 
   .comment-head {

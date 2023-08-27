@@ -6,13 +6,13 @@ const commentContainer = (comment) => {
     return `
         <div class="comment-container">
             <div class="voting desktop">
-                <div class="upvote">
+                <div class="upvote" id=${comment.id}>
                     <img src="./images/icon-plus.svg" alt="upvote icon">
                 </div>
                 <div class="votes">
                     <span>${comment.score}</span>
                 </div>
-                <div class="downvote">
+                <div class="downvote" id=${comment.id}>
                     <img src="./images/icon-minus.svg" alt="downvote icon">
                 </div>
             </div>
@@ -43,13 +43,13 @@ const commentContainer = (comment) => {
                 </div>
                 <div class="buttons mobile">
                     <div class="voting">
-                        <div class="upvote">
+                        <div class="upvote" id=${comment.id}>
                             <img src="./images/icon-plus.svg" alt="upvote icon">
                         </div>
                         <div class="votes">
                             <span>${comment.score}</span>
                         </div>
-                        <div class="downvote">
+                        <div class="downvote" id=${comment.id}>
                             <img src="./images/icon-minus.svg" alt="downvote icon">
                         </div>
                     </div>
@@ -88,7 +88,7 @@ const replyContainer = (currentUser) => {
     `
 }
 
-const addComment = (currentUser) => {
+const addCommentContainer = (currentUser) => {
     return `
         <div class="add-comment">
             <div class="flex-center avatar desktop">
@@ -130,10 +130,34 @@ async function load() {
         mainContainer.append(container)
     })
 
-    mainContainer.innerHTML += addComment(data.currentUser)
+    mainContainer.innerHTML += addCommentContainer(data.currentUser)
 
+    const upvoteButton = document.querySelectorAll('.upvote');
+    const downvoteButton = document.querySelectorAll('.downvote');
+
+    upvoteButton.forEach(el => {
+        el.addEventListener('click', (e) => {
+            upvote(e)
+        });
+    });
+
+    downvoteButton.forEach(el => {
+        el.addEventListener('click', (e) => {
+            downvote(e)
+        });
+    });
 }
 
 load()
+
+function upvote(e) {
+    const commentId = e.target.parentNode.id
+}
+
+function downvote(e) {
+    const commentId = e.target.parentNode.id
+    console.log(commentId)
+}
+
 
 
