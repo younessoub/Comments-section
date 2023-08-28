@@ -88,6 +88,13 @@ const replyContainer = (currentUser) => {
     `
 }
 
+const replysContainer = () => {
+    return `
+        
+    
+    `
+}
+
 const addCommentContainer = (currentUser) => {
     return `
         <div class="add-comment">
@@ -120,7 +127,10 @@ function getData() {
 }
 
 async function load() {
-    const data = await getData();
+
+    const data = JSON.parse(localStorage.getItem('data')) || await getData();
+
+    localStorage.setItem('data', JSON.stringify(data))
 
     data.comments.forEach((comment) => {
         const container = document.createElement('div');
@@ -128,6 +138,30 @@ async function load() {
         container.innerHTML += commentContainer(comment)
         container.innerHTML += replyContainer(data.currentUser)
         mainContainer.append(container)
+        if (comment.replies[0] != undefined) {
+            const repliesHead = `
+                <div class="replys-container">
+                <div class="line"></div>
+                <div class="replys">
+            `
+
+            const repliesBottom = `
+                </div>
+                </div>
+            `
+            let repliesContent = '';
+
+            comment.replies.forEach(reply => {
+                const container = document.createElement('div');
+                container.classList.add('container')
+                container.innerHTML += commentContainer(reply)
+                container.innerHTML += replyContainer(data.currentUser)
+                repliesContent += container;
+            })
+
+            mainContainer.innerHTML += repliesHead + repliesContent + repliesBottom
+        }
+
     })
 
     mainContainer.innerHTML += addCommentContainer(data.currentUser)
@@ -137,27 +171,33 @@ async function load() {
 
     upvoteButton.forEach(el => {
         el.addEventListener('click', (e) => {
-            upvote(e)
+            upvote(e, data)
         });
     });
 
     downvoteButton.forEach(el => {
         el.addEventListener('click', (e) => {
-            downvote(e)
+            downvote(e, data)
         });
     });
 }
 
 load()
 
-function upvote(e) {
-    const commentId = e.target.parentNode.id
+function addCommentToDom() {
+
 }
 
-function downvote(e) {
+function upvote(e, data) {
     const commentId = e.target.parentNode.id
-    console.log(commentId)
+
 }
+
+function downvote(e, data) {
+    const commentId = e.target.parentNode.id
+    console.log(data)
+}
+
 
 
 
