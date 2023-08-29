@@ -29,7 +29,7 @@ const commentContainer = (comment) => {
                             ${comment.createdAt}
                         </span>
                     </div>
-                    <div class="reply-button desktop">
+                    <div class="reply-button desktop" id=${comment.id}>
                         <div class="flex-center">
                             <img src="./images/icon-reply.svg" alt="reply icon">
                         </div>
@@ -53,7 +53,7 @@ const commentContainer = (comment) => {
                             <img src="./images/icon-minus.svg" alt="downvote icon">
                         </div>
                     </div>
-                    <div class="reply-button">
+                    <div class="reply-button" id=${comment.id}>
                         <div class="flex-center">
                             <img src="./images/icon-reply.svg" alt="reply icon">
                         </div>
@@ -65,9 +65,9 @@ const commentContainer = (comment) => {
     `
 }
 
-const replyContainer = (currentUser) => {
+const replyContainer = (currentUser, comment) => {
     return `
-        <div class="reply-container">
+        <div class="reply-container" id=${comment.id}>
             <div class="flex-center avatar desktop">
                 <img src=${currentUser.image.webp} alt="avatar">
             </div>
@@ -133,7 +133,7 @@ async function load() {
 
     localStorage.setItem('data', JSON.stringify(data))
 
-    console.log(data)
+    // console.log(data)
     // loading comments to DOM
     mainContainer.innerHTML = '';
     data.comments.forEach((comment) => {
@@ -141,7 +141,7 @@ async function load() {
         const container = document.createElement('div');
         container.classList.add('container')
         container.innerHTML += commentContainer(comment)
-        container.innerHTML += replyContainer(data.currentUser)
+        container.innerHTML += replyContainer(data.currentUser, comment)
         mainContainer.append(container)
         if (comment.replies[0] != undefined) {
             const repliesHead = `
@@ -160,7 +160,7 @@ async function load() {
             comment.replies.forEach(reply => {
                 let container = '<div class="container">';
                 container += commentContainer(reply)
-                container += replyContainer(data.currentUser)
+                container += replyContainer(data.currentUser, reply)
                 container += '</div>'
                 repliesContent += container;
             })
@@ -174,6 +174,8 @@ async function load() {
 
     const upvoteButton = document.querySelectorAll('.upvote');
     const downvoteButton = document.querySelectorAll('.downvote');
+    const replyButton = document.querySelectorAll('.reply-button');
+    const replyContainerHtml = document.querySelectorAll('.reply-container');
 
     upvoteButton.forEach(el => {
         el.addEventListener('click', (e) => {
@@ -186,9 +188,15 @@ async function load() {
             downvote(e, data)
         });
     });
+
+
+    replyButton.forEach(b => {
+        b.addEventListener('click', () => {
+            showReplyContainer(b.id, replyContainerHtml)
+        })
+    })
 }
 
-load()
 
 function upvote(e, data) {
 
@@ -263,6 +271,23 @@ function downvote(e, data) {
 
     }
 }
+
+function showReplyContainer(id, replyContainers) {
+    replyContainers.forEach(container => {
+
+        if (container.id === id) {
+            if (container.style.display === 'flex') {
+                container.setAttribute('style', 'display:none !important');
+            } else {
+                container.setAttribute('style', 'display:flex !important');
+            }
+            return
+        }
+    })
+
+}
+
+load()
 
 
 

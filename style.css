@@ -203,6 +203,10 @@ button {
   border-radius: 5px;
 }
 
+button:hover {
+  background-color: var(--Lightgrayishblue);
+}
+
 textarea {
   width: 100%;
   border-radius: 5px;
