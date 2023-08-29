@@ -215,11 +215,12 @@ textarea {
 .replys-container {
   margin-top: 20px;
   display: flex;
+  /* align-items: flex-start; */
 }
 
 .line {
   border: 1px solid var(--Lightgray);
-  margin: 0 5%;
+  margin: 0 5% 20px 5%;
 }
 
 .add-comment {

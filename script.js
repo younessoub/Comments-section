@@ -128,11 +128,16 @@ function getData() {
 
 async function load() {
 
+
     const data = JSON.parse(localStorage.getItem('data')) || await getData();
 
     localStorage.setItem('data', JSON.stringify(data))
 
+    console.log(data)
+    // loading comments to DOM
+    mainContainer.innerHTML = '';
     data.comments.forEach((comment) => {
+
         const container = document.createElement('div');
         container.classList.add('container')
         container.innerHTML += commentContainer(comment)
@@ -151,11 +156,12 @@ async function load() {
             `
             let repliesContent = '';
 
+            // loading the replies for each comment
             comment.replies.forEach(reply => {
-                const container = document.createElement('div');
-                container.classList.add('container')
-                container.innerHTML += commentContainer(reply)
-                container.innerHTML += replyContainer(data.currentUser)
+                let container = '<div class="container">';
+                container += commentContainer(reply)
+                container += replyContainer(data.currentUser)
+                container += '</div>'
                 repliesContent += container;
             })
 
@@ -184,18 +190,78 @@ async function load() {
 
 load()
 
-function addCommentToDom() {
-
-}
-
 function upvote(e, data) {
-    const commentId = e.target.parentNode.id
 
+    const commentId = Number(e.target.parentNode.id)
+    for (const comment of data.comments) {
+        if (comment.id == commentId) {
+
+            if (comment?.voted == -1) {
+                comment.voted = 0
+                comment.score++;
+                localStorage.setItem('data', JSON.stringify(data))
+                load()
+            } else if (comment?.voted == 0 || !comment.hasOwnProperty('voted')) {
+                comment.voted = 1
+                comment.score++;
+                localStorage.setItem('data', JSON.stringify(data))
+                load()
+            }
+        } else {
+            comment.replies.forEach(reply => {
+                if (reply.id == commentId) {
+                    if (reply?.voted == -1) {
+                        reply.voted = 0
+                        reply.score++;
+                        localStorage.setItem('data', JSON.stringify(data))
+                        load()
+                    } else if (reply?.voted == 0 || !reply.hasOwnProperty('voted')) {
+                        reply.voted = 1
+                        reply.score++;
+                        localStorage.setItem('data', JSON.stringify(data))
+                        load()
+                    }
+                }
+            })
+        }
+
+    }
 }
 
 function downvote(e, data) {
-    const commentId = e.target.parentNode.id
-    console.log(data)
+    const commentId = Number(e.target.parentNode.id)
+    for (const comment of data.comments) {
+        if (comment.id == commentId) {
+            if (comment?.voted == 1) {
+                comment.voted = 0
+                comment.score--;
+                localStorage.setItem('data', JSON.stringify(data))
+                load()
+            } else if (comment?.voted == 0 || !comment.hasOwnProperty('voted')) {
+                comment.voted = -1
+                comment.score--;
+                localStorage.setItem('data', JSON.stringify(data))
+                load()
+            }
+        } else {
+            comment.replies.forEach(reply => {
+                if (reply.id == commentId) {
+                    if (reply?.voted == 1) {
+                        reply.voted = 0
+                        reply.score--;
+                        localStorage.setItem('data', JSON.stringify(data))
+                        load()
+                    } else if (reply?.voted == 0 || !reply.hasOwnProperty('voted')) {
+                        reply.voted = -1
+                        reply.score--;
+                        localStorage.setItem('data', JSON.stringify(data))
+                        load()
+                    }
+                }
+            })
+        }
+
+    }
 }
 
 
