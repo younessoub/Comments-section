@@ -189,6 +189,11 @@ img[alt~="avatar"] {
   border-radius: 5px;
 }
 
+.replying-to {
+  color: var(--Moderateblue);
+  font-weight: 700;
+}
+
 .avatar-reply {
   display: flex;
   justify-content: space-between;

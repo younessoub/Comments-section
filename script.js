@@ -38,7 +38,7 @@ const commentContainer = (comment) => {
                 </div>
                 <div class="comment">
                     <p>
-                    ${comment.content}
+                        <span class='replying-to'>${comment.replyingTo ? '@' + comment.replyingTo : ''}</span> ${comment.content}
                     </p>
                 </div>
                 <div class="buttons mobile">
@@ -71,8 +71,7 @@ const replyContainer = (currentUser, comment) => {
             <div class="flex-center avatar desktop">
                 <img src=${currentUser.image.webp} alt="avatar">
             </div>
-            <textarea rows="5">
-            </textarea>
+            <textarea rows="5"></textarea>
             <button class="replay-send desktop">
                 REPLY
             </button>
@@ -90,8 +89,6 @@ const replyContainer = (currentUser, comment) => {
 
 const replysContainer = () => {
     return `
-        
-    
     `
 }
 
@@ -101,17 +98,15 @@ const addCommentContainer = (currentUser) => {
             <div class="flex-center avatar desktop">
                 <img src=${currentUser.image.webp} alt="avatar">
             </div>
-            <textarea rows="5" placeholder="Add a comment">
-
-            </textarea>
-            <button class="reply-send desktop">
+            <textarea rows="5" placeholder="Add a comment" class="new-comment"></textarea>
+            <button class="reply-send desktop send-comment">
                 SEND
             </button>
             <div class="avatar-reply mobile">
                 <div class="flex-center">
                     <img src="./images/avatars/image-juliusomo.webp" alt="avatar">
                 </div>
-                <button>
+                <button class="send-comment">
                     SEND
                 </button>
             </div>
@@ -128,14 +123,16 @@ function getData() {
 
 async function load() {
 
+    // this is for creating new comment because i need a new id
+    let lastId;
 
     const data = JSON.parse(localStorage.getItem('data')) || await getData();
 
     localStorage.setItem('data', JSON.stringify(data))
 
-    // console.log(data)
-    // loading comments to DOM
     mainContainer.innerHTML = '';
+
+    // loading comments to DOM
     data.comments.forEach((comment) => {
 
         const container = document.createElement('div');
@@ -143,6 +140,9 @@ async function load() {
         container.innerHTML += commentContainer(comment)
         container.innerHTML += replyContainer(data.currentUser, comment)
         mainContainer.append(container)
+
+        lastId = comment.id;
+
         if (comment.replies[0] != undefined) {
             const repliesHead = `
                 <div class="replys-container">
@@ -163,6 +163,8 @@ async function load() {
                 container += replyContainer(data.currentUser, reply)
                 container += '</div>'
                 repliesContent += container;
+
+                lastId = reply.id;
             })
 
             mainContainer.innerHTML += repliesHead + repliesContent + repliesBottom
@@ -176,6 +178,10 @@ async function load() {
     const downvoteButton = document.querySelectorAll('.downvote');
     const replyButton = document.querySelectorAll('.reply-button');
     const replyContainerHtml = document.querySelectorAll('.reply-container');
+    const newComment = document.querySelector('.new-comment');
+    const sendComment = document.querySelectorAll('.send-comment');
+
+
 
     upvoteButton.forEach(el => {
         el.addEventListener('click', (e) => {
@@ -193,6 +199,14 @@ async function load() {
     replyButton.forEach(b => {
         b.addEventListener('click', () => {
             showReplyContainer(b.id, replyContainerHtml)
+        })
+    })
+
+    sendComment.forEach(button => {
+        button.addEventListener('click', () => {
+            if (newComment.value !== '') {
+                addNewComment(newComment.value, lastId, data)
+            }
         })
     })
 }
@@ -284,6 +298,28 @@ function showReplyContainer(id, replyContainers) {
             return
         }
     })
+
+}
+
+function addNewComment(content, lastId, data) {
+    const newComment = {
+        "id": lastId + 1,
+        "content": content,
+        "createdAt": "Now",
+        "score": 0,
+        "user": {
+            "image": {
+                "png": data.currentUser.image.png,
+                "webp": data.currentUser.image.webp
+            },
+            "username": data.currentUser.username
+        },
+        "replies": []
+    }
+
+    data.comments.push(newComment);
+    localStorage.setItem('data', JSON.stringify(data))
+    load()
 
 }
 
