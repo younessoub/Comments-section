@@ -1,7 +1,7 @@
 const mainContainer = document.querySelector('.main-container');
 
 
-const commentContainer = (comment) => {
+const commentContainer = (data, comment) => {
 
     return `
         <div class="comment-container">
@@ -25,6 +25,7 @@ const commentContainer = (comment) => {
                         <b class="author-name">
                             ${comment.user.username}
                         </b>
+                        ${comment.user.username === data.currentUser.username ? '<span class="you">you</span>' : ''}
                         <span class="time">
                             ${comment.createdAt}
                         </span>
@@ -71,15 +72,15 @@ const replyContainer = (currentUser, comment) => {
             <div class="flex-center avatar desktop">
                 <img src=${currentUser.image.webp} alt="avatar">
             </div>
-            <textarea rows="5"></textarea>
-            <button class="replay-send desktop">
+            <textarea rows="5" id=${comment.id} class="reply-text"></textarea>
+            <button class="reply-send desktop" id=${comment.id}>
                 REPLY
             </button>
             <div class="avatar-reply mobile">
                 <div class="flex-center">
                     <img src=${currentUser.image.webp} alt="avatar">
                 </div>
-                <button>
+                <button class="reply-send" id=${comment.id}>
                     REPLY
                 </button>
             </div>
@@ -87,10 +88,10 @@ const replyContainer = (currentUser, comment) => {
     `
 }
 
-const replysContainer = () => {
-    return `
-    `
-}
+// const replysContainer = () => {
+//     return `
+//     `
+// }
 
 const addCommentContainer = (currentUser) => {
     return `
@@ -124,7 +125,7 @@ function getData() {
 async function load() {
 
     // this is for creating new comment because i need a new id
-    let lastId;
+    let lastId = 4;
 
     const data = JSON.parse(localStorage.getItem('data')) || await getData();
 
@@ -137,11 +138,13 @@ async function load() {
 
         const container = document.createElement('div');
         container.classList.add('container')
-        container.innerHTML += commentContainer(comment)
+        container.innerHTML += commentContainer(data, comment)
         container.innerHTML += replyContainer(data.currentUser, comment)
         mainContainer.append(container)
 
-        lastId = comment.id;
+        if (comment.id > lastId) {
+            lastId = comment.id;
+        }
 
         if (comment.replies[0] != undefined) {
             const repliesHead = `
@@ -159,12 +162,14 @@ async function load() {
             // loading the replies for each comment
             comment.replies.forEach(reply => {
                 let container = '<div class="container">';
-                container += commentContainer(reply)
+                container += commentContainer(data, reply)
                 container += replyContainer(data.currentUser, reply)
                 container += '</div>'
                 repliesContent += container;
 
-                lastId = reply.id;
+                if (reply.id > lastId) {
+                    lastId = reply.id;
+                }
             })
 
             mainContainer.innerHTML += repliesHead + repliesContent + repliesBottom
@@ -180,7 +185,8 @@ async function load() {
     const replyContainerHtml = document.querySelectorAll('.reply-container');
     const newComment = document.querySelector('.new-comment');
     const sendComment = document.querySelectorAll('.send-comment');
-
+    const replyText = document.querySelectorAll('.reply-text')
+    const replySend = document.querySelectorAll('.reply-send')
 
 
     upvoteButton.forEach(el => {
@@ -207,6 +213,12 @@ async function load() {
             if (newComment.value !== '') {
                 addNewComment(newComment.value, lastId, data)
             }
+        })
+    })
+
+    replySend.forEach(b => {
+        b.addEventListener('click', () => {
+            addNewReply(replyText, lastId, b.id, data)
         })
     })
 }
@@ -290,10 +302,14 @@ function showReplyContainer(id, replyContainers) {
     replyContainers.forEach(container => {
 
         if (container.id === id) {
-            if (container.style.display === 'flex') {
+            if (container.style.display === 'flex' || container.style.display === 'block') {
                 container.setAttribute('style', 'display:none !important');
             } else {
-                container.setAttribute('style', 'display:flex !important');
+                if (window.matchMedia("(min-width:700px)").matches) {
+                    container.setAttribute('style', 'display:flex !important');
+                } else {
+                    container.setAttribute('style', 'display:block !important');
+                }
             }
             return
         }
@@ -318,6 +334,59 @@ function addNewComment(content, lastId, data) {
     }
 
     data.comments.push(newComment);
+    localStorage.setItem('data', JSON.stringify(data))
+    load()
+
+}
+
+function addNewReply(replyText, lastId, replyingToId, data) {
+    let content;
+    replyText.forEach((e) => {
+        if (e.id === replyingToId) {
+            content = e.value;
+        }
+    })
+
+    if (content == '') return
+
+    data.comments.forEach(comment => {
+        if (comment.id == replyingToId) {
+            comment.replies.push({
+                "id": lastId + 1,
+                "content": content,
+                "createdAt": "Now",
+                "score": 0,
+                "replyingTo": comment.user.username,
+                "user": {
+                    "image": {
+                        "png": data.currentUser.image.png,
+                        "webp": data.currentUser.image.webp
+                    },
+                    "username": data.currentUser.username
+                }
+            })
+        } else {
+            comment.replies.forEach(reply => {
+                if (reply.id == replyingToId) {
+                    comment.replies.push({
+                        "id": lastId + 1,
+                        "content": content,
+                        "createdAt": "Now",
+                        "score": 0,
+                        "replyingTo": reply.user.username,
+                        "user": {
+                            "image": {
+                                "png": data.currentUser.image.png,
+                                "webp": data.currentUser.image.webp
+                            },
+                            "username": data.currentUser.username
+                        }
+                    })
+                }
+            })
+        }
+    })
+
     localStorage.setItem('data', JSON.stringify(data))
     load()
 

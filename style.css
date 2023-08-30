@@ -117,6 +117,7 @@ body {
 
 .container {
   margin-bottom: 20px;
+  /* width: 100%; */
 }
 
 .comment-container {
@@ -135,6 +136,13 @@ img[alt~="avatar"] {
   display: flex;
   gap: 20px;
   align-items: center;
+}
+
+.you {
+  background-color: var(--Moderateblue);
+  color: var(--White);
+  border-radius: 5px;
+  padding: 3px 8px;
 }
 
 .time {
@@ -224,12 +232,15 @@ textarea {
 .replys-container {
   margin-top: 20px;
   display: flex;
-  /* align-items: flex-start; */
 }
 
 .line {
   border: 1px solid var(--Lightgray);
   margin: 0 5% 20px 5%;
+}
+
+.replys {
+  width: 90%;
 }
 
 .add-comment {
