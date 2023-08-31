@@ -33,7 +33,7 @@ const commentContainer = (data, comment) => {
                         </b>
                         ${comment.user.username === data.currentUser.username ? '<span class="you">you</span>' : ''}
                         <span class="time">
-                            ${comment.createdAt}
+                            ${timePassed(new Date(comment.createdAt))}
                         </span>
                     </div>
                     ${comment.user.username === data.currentUser.username ?
@@ -344,7 +344,7 @@ function addNewComment(content, lastId, data) {
     const newComment = {
         "id": lastId + 1,
         "content": content,
-        "createdAt": "Now",
+        "createdAt": new Date(),
         "score": 0,
         "user": {
             "image": {
@@ -466,12 +466,14 @@ function toggleEditContainer(id, comments, containers, data) {
 
 function handleDelete(id, data) {
     window.scrollTo(0, 0)
+    document.body.style.overflowY = 'hidden'
     shadow.style.display = 'block'
     deleteConfirm.style.display = 'block'
 
     cancel.addEventListener('click', () => {
         shadow.style.display = 'none'
         deleteConfirm.style.display = 'none'
+        document.body.style.overflowY = 'scroll'
     })
 
     confirm.addEventListener('click', () => {
@@ -488,10 +490,42 @@ function handleDelete(id, data) {
         })
         shadow.style.display = 'none'
         deleteConfirm.style.display = 'none'
+        document.body.style.overflowY = 'scroll'
 
         localStorage.setItem('data', JSON.stringify(data))
         load()
     })
+}
+
+function timePassed(givenDate) {
+
+    const currentDate = new Date();
+    const timeDifference = currentDate - givenDate;
+
+    const seconds = Math.floor(timeDifference / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+    const months = Math.floor(days / 30); // Approximate months
+    const years = Math.floor(months / 12); // Approximate years
+
+    if (years > 0) {
+        return `${years} year${years > 1 ? 's' : ''} ago`;
+    } else if (months > 0) {
+        return `${months} month${months > 1 ? 's' : ''} ago`;
+    } else if (weeks > 0) {
+        return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+    } else if (days > 0) {
+        return `${days} day${days > 1 ? 's' : ''} ago`;
+    } else if (hours > 0) {
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else if (minutes > 0) {
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else {
+        return `${seconds} second${seconds !== 1 ? 's' : ''} ago`;
+    }
+
 }
 
 load()
