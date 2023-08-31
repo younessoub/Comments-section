@@ -377,7 +377,7 @@ function addNewReply(replyText, lastId, replyingToId, data) {
             comment.replies.push({
                 "id": lastId + 1,
                 "content": content,
-                "createdAt": "Now",
+                "createdAt": new Date(),
                 "score": 0,
                 "replyingTo": comment.user.username,
                 "user": {
@@ -394,7 +394,7 @@ function addNewReply(replyText, lastId, replyingToId, data) {
                     comment.replies.push({
                         "id": lastId + 1,
                         "content": content,
-                        "createdAt": "Now",
+                        "createdAt": new Date(),
                         "score": 0,
                         "replyingTo": reply.user.username,
                         "user": {
