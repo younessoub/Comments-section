@@ -443,11 +443,13 @@ function toggleEditContainer(id, comments, containers, data) {
                     data.comments.forEach(comment => {
                         if (comment.id == id) {
                             comment.content = textarea.value
+                            comment.createdAt = new Date()
                             return
                         } else {
                             comment.replies.forEach(reply => {
                                 if (reply.id == id) {
                                     reply.content = textarea.value
+                                    reply.createdAt = new Date()
                                 }
                                 return
                             })
