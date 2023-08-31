@@ -1,3 +1,9 @@
+const shadow = document.querySelector('.shadow');
+const deleteConfirm = document.querySelector('.delete-confirm');
+const cancel = document.querySelector('.cancel')
+const confirm = document.querySelector('.confirm')
+
+
 const mainContainer = document.querySelector('.main-container');
 
 
@@ -30,18 +36,20 @@ const commentContainer = (data, comment) => {
                             ${comment.createdAt}
                         </span>
                     </div>
-                    <div class="reply-button desktop" id=${comment.id}>
-                        <div class="flex-center">
-                            <img src="./images/icon-reply.svg" alt="reply icon">
-                        </div>
-                        <span>Reply</span>
-                    </div>
+                    ${comment.user.username === data.currentUser.username ?
+            '<div class="edit-delete desktop" id=' + comment.id + '}><div class="edit-button" id=' + comment.id + '><div class="flex-center"><img src="./images/icon-edit.svg" alt="edit icon"></div><span>Edit</span></div><div id=' + comment.id + ' class="delete-button"><div class="flex-center"><img src="./images/icon-delete.svg" alt="delete icon"></div><span>Delete</span></div></div>'
+            :
+            '<div class="reply-button desktop" id=' + comment.id + '><div class="flex-center"><img src="./images/icon-reply.svg" alt="reply icon"></div><span>Reply</span></div>'
+        }
                 </div>
-                <div class="comment">
+                <div class="comment" id=${comment.id}>
                     <p>
                         <span class='replying-to'>${comment.replyingTo ? '@' + comment.replyingTo : ''}</span> ${comment.content}
                     </p>
                 </div>
+                ${comment.user.username === data.currentUser.username ?
+            '<div class="edit-container" id=' + comment.id + '><textarea rows="5" class="edit-text" id=' + comment.id + '>' + comment.content + '</textarea><button class="update">UPDATE</button></div>'
+            : ''}
                 <div class="buttons mobile">
                     <div class="voting">
                         <div class="upvote" id=${comment.id}>
@@ -54,12 +62,11 @@ const commentContainer = (data, comment) => {
                             <img src="./images/icon-minus.svg" alt="downvote icon">
                         </div>
                     </div>
-                    <div class="reply-button" id=${comment.id}>
-                        <div class="flex-center">
-                            <img src="./images/icon-reply.svg" alt="reply icon">
-                        </div>
-                        <span>Reply</span>
-                    </div>
+                    ${comment.user.username === data.currentUser.username ?
+            '<div class="edit-delete" id=' + comment.id + '}><div class="edit-button" id=' + comment.id + '><div class="flex-center"><img src="./images/icon-edit.svg" alt="edit icon"></div><span>Edit</span></div><div id=' + comment.id + ' class="delete-button"><div class="flex-center"><img src="./images/icon-delete.svg" alt="delete icon"></div><span>delete</span></div></div>'
+            :
+            '<div class="reply-button" id=' + comment.id + '><div class="flex-center"><img src="./images/icon-reply.svg" alt="reply icon"></div><span>Reply</span></div>'
+        }
                 </div>
             </div>
         </div>
@@ -87,11 +94,6 @@ const replyContainer = (currentUser, comment) => {
         </div>
     `
 }
-
-// const replysContainer = () => {
-//     return `
-//     `
-// }
 
 const addCommentContainer = (currentUser) => {
     return `
@@ -179,14 +181,23 @@ async function load() {
 
     mainContainer.innerHTML += addCommentContainer(data.currentUser)
 
-    const upvoteButton = document.querySelectorAll('.upvote');
-    const downvoteButton = document.querySelectorAll('.downvote');
-    const replyButton = document.querySelectorAll('.reply-button');
-    const replyContainerHtml = document.querySelectorAll('.reply-container');
-    const newComment = document.querySelector('.new-comment');
-    const sendComment = document.querySelectorAll('.send-comment');
+    const upvoteButton = document.querySelectorAll('.upvote')
+    const downvoteButton = document.querySelectorAll('.downvote')
+
+    const replyButton = document.querySelectorAll('.reply-button')
+    const replyContainerHtml = document.querySelectorAll('.reply-container')
+
+    const newComment = document.querySelector('.new-comment')
+    const sendComment = document.querySelectorAll('.send-comment')
+
     const replyText = document.querySelectorAll('.reply-text')
     const replySend = document.querySelectorAll('.reply-send')
+
+    const deleteButton = document.querySelectorAll('.delete-button')
+    const editButton = document.querySelectorAll('.edit-button')
+    const editContainers = document.querySelectorAll('.edit-container')
+
+    const comments = document.querySelectorAll('.comment')
 
 
     upvoteButton.forEach(el => {
@@ -221,8 +232,20 @@ async function load() {
             addNewReply(replyText, lastId, b.id, data)
         })
     })
-}
 
+    editButton.forEach(b => {
+        b.addEventListener('click', () => {
+            toggleEditContainer(b.id, comments, editContainers, data)
+        })
+    })
+
+    deleteButton.forEach(b => {
+        b.addEventListener('click', () => {
+            handleDelete(b.id, data)
+        })
+    })
+
+}
 
 function upvote(e, data) {
 
@@ -390,6 +413,85 @@ function addNewReply(replyText, lastId, replyingToId, data) {
     localStorage.setItem('data', JSON.stringify(data))
     load()
 
+}
+
+function toggleEditContainer(id, comments, containers, data) {
+
+    containers.forEach(container => {
+        if (id == container.id) {
+            if (container.style.display == 'flex') {
+                comments.forEach(comment => {
+                    if (comment.id == id) {
+                        comment.style.display = 'flex'
+                    }
+                })
+                container.style.display = 'none'
+            } else {
+                comments.forEach(comment => {
+                    if (comment.id == id) {
+                        comment.style.display = 'none'
+                    }
+                })
+                container.style.display = 'flex'
+            }
+
+            const textarea = container.querySelector('textarea')
+            const updateButton = container.querySelector('.update')
+
+            updateButton.addEventListener('click', () => {
+                if (textarea != '') {
+                    data.comments.forEach(comment => {
+                        if (comment.id == id) {
+                            comment.content = textarea.value
+                            return
+                        } else {
+                            comment.replies.forEach(reply => {
+                                if (reply.id == id) {
+                                    reply.content = textarea.value
+                                }
+                                return
+                            })
+                            return
+                        }
+                    })
+
+                    localStorage.setItem('data', JSON.stringify(data))
+                    load()
+                }
+            })
+            return
+        }
+    })
+}
+
+function handleDelete(id, data) {
+    window.scrollTo(0, 0)
+    shadow.style.display = 'block'
+    deleteConfirm.style.display = 'block'
+
+    cancel.addEventListener('click', () => {
+        shadow.style.display = 'none'
+        deleteConfirm.style.display = 'none'
+    })
+
+    confirm.addEventListener('click', () => {
+        data.comments.forEach((comment, index) => {
+            if (comment.id == id) {
+                data.comments.splice(index, 1)
+            } else {
+                comment.replies.forEach((reply, index) => {
+                    if (reply.id == id) {
+                        comment.replies.splice(index, 1)
+                    }
+                })
+            }
+        })
+        shadow.style.display = 'none'
+        deleteConfirm.style.display = 'none'
+
+        localStorage.setItem('data', JSON.stringify(data))
+        load()
+    })
 }
 
 load()

@@ -180,6 +180,39 @@ img[alt~="avatar"] {
   justify-content: space-between;
 }
 
+.edit-delete {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-weight: 500;
+}
+
+.edit-delete>div {
+  display: flex;
+  gap: 5px;
+}
+
+.edit-delete>div:hover {
+  opacity: .5;
+}
+
+.edit-delete>div:nth-child(1) {
+  color: var(--Moderateblue);
+}
+
+.edit-delete>div:nth-child(2) {
+  color: var(--SoftRed);
+}
+
+.edit-container {
+  display: none;
+  margin-top: 20px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
 .reply-button {
   display: flex;
   align-items: center;
@@ -294,6 +327,7 @@ textarea {
     justify-content: space-between;
   }
 
+  .edit-delete,
   .reply-button {
     display: flex;
   }
